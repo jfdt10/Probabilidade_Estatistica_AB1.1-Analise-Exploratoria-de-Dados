@@ -1,0 +1,1057 @@
+---
+title: "Relatório AB1.1 - Probabilidade e Estatística"
+author: |
+  Alunos:
+  
+    Jean Felipe Duarte Tenório  
+    
+    Jayme Vinicius Esteves Pedroza Melo
+                        
+
+  Professor:
+    Petrúcio Antônio Medeiros Barros
+date: "`r format(Sys.Date(), '%d-%m-%Y')`"
+output:
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_depth: 2
+    highlight: tango
+    df_print: paged
+  pdf_document:
+    toc: true
+    latex_engine: xelatex
+    keep_tex: true
+fontsize: 11pt
+geometry: margin=1in
+---
+
+
+# **Contexto Geral do Projeto de acordo com a base de dados Escolhida:**
+
+# Introdução e Contexto do Trabalho
+
+Este trabalho tem como objetivo realizar uma **Análise Exploratória de Dados (AED)** e aplicar técnicas estatísticas descritivas e bivariadas para compreender padrões e relações presentes na base de dados escolhida. Todas as análises serão desenvolvidas no **R*.
+
+## Contexto Geral da Base de Dados
+
+O conjunto de dados **"Estimation of Obesity Levels Based on Eating Habits and Physical Condition"** foi disponibilizado no **UCI Machine Learning Repository** em 26 de agosto de 2019.\
+Ele contém informações sobre **hábitos alimentares**, **condições físicas** e **características demográficas** de **2 111 indivíduos** de **México, Peru e Colômbia**, com idades entre **14 e 61 anos**.
+
+O objetivo principal é **estimar o nível de obesidade** com base nas variáveis coletadas.\
+A variável-alvo **`NObesity`** (Nível de Obesidade) possui sete categorias: - Abaixo do Peso - Peso Normal - Sobrepeso Nível 1 - Sobrepeso Nível 2 - Obesidade Nível 1 - Obesidade Nível 2 - Obesidade Nível 3
+
+### Composição dos Dados
+
+| Tipo de Variável | Atributos |
+|------------------------------------|------------------------------------|
+| **Demográficas** | `Gender`, `Age`, `Height`, `Weight`, `family_history_with_overweight` |
+| **Hábitos alimentares** | `FAVC` (alta caloria), `FCVC` (vegetais), `NCP` (refeições), `CAEC` (entre refeições), `CH2O` (água), `CALC` (álcool) |
+| **Condição física** | `SCC` (monitoramento de calorias), `FAF` (atividade física), `TUE` (uso de tecnologia), `MTRANS` (transporte) |
+| **Variável alvo** | `NObesity` (nível de obesidade) |
+
+Todos os registros são **completos**, sem valores ausentes.
+
+### Origem dos Dados
+
+-   **77% dos registros** foram gerados sinteticamente usando **WEKA** e o filtro **SMOTE** para balanceamento de classes.\
+-   **23% dos registros** foram coletados diretamente por meio de uma plataforma web, com respostas fornecidas pelos próprios participantes.
+
+
+------------------------------------------------------------------------
+
+## Estrutura do Trabalho
+
+### 1. Preparação e Análise Exploratória de Dados
+
+-   Importar a base para o R e identificar número de linhas e colunas.\
+-   Criar um dicionário de dados com a descrição de cada variável.\
+-   Padronizar nomes das colunas e valores categóricos.\
+-   Verificar e tratar valores inconsistentes ou outliers.\
+-   Salvar a base limpa em formato `.xlsx`.
+
+### 2. Estatísticas Descritivas de uma Variável Numérica
+
+-   Selecionar uma variável numérica contínua.\
+-   Calcular mínimo, máximo, média, mediana, desvio padrão e quartis.\
+-   Construir histograma e boxplot, interpretando os resultados.
+
+### 3. Análise Bivariada de Duas Variáveis Categóricas
+
+-   Escolher duas variáveis categóricas.\
+-   Criar gráficos de barras comparativos.\
+-   Interpretar padrões e relações encontradas.
+
+### 4. Boxplot entre Variável Numérica e Categórica
+
+-   Relacionar uma variável numérica contínua e uma categórica.\
+-   Construir boxplot e justificar a escolha das variáveis.\
+-   Interpretar diferenças entre os grupos.
+
+### 5. Matriz de Correlação
+
+-   Calcular e visualizar a matriz de correlação entre todas as variáveis numéricas.\
+-   Explicar as correlações mais relevantes encontradas.
+
+### 6. Análise Bivariada de Duas Variáveis Numéricas
+
+-   Escolher duas variáveis numéricas.\
+-   Criar gráfico de dispersão com linha de tendência.\
+-   Calcular a equação da reta ajustada, a correlação e o coeficiente de determinação (R²).
+
+### 7. Formulação e Teste de Três Perguntas
+
+-   Criar três perguntas envolvendo análise bivariada.\
+-   Utilizar gráficos ou análises estatísticas para confirmar ou refutar as hipóteses.\
+-   Interpretar cada resultado obtido.
+
+------------------------------------------------------------------------
+
+## Entregas
+
+-   Código-fonte em R (`.R`) e `.Rmd`\
+-   Arquivo Excel com base tratada\
+-   Relatório em HTML ou PDF\
+-   Apresentação de até 7 minutos com principais descobertas
+
+# 1. Preparação e Análise Exploratória de Dados
+
+Nesta etapa, realizamos a preparação inicial da base escolhida, contemplando:
+
+-   Importação e inspeção inicial;
+
+-   Seleção e renomeação de variáveis;
+
+-   Padronização e tradução de valores categóricos;
+
+-   Tratamento de tipos de dados;
+
+-   Arredondamento de valores numéricos;
+
+-   Exportação da base limpa.
+
+------------------------------------------------------------------------
+
+## 1.1. Limpeza do ambiente
+
+### 1.1.1. Remove todos os objetos carregados na sessão
+
+```{r}
+rm(list = ls())
+```
+
+## 1.2. Definir Diretório dos Arquivos
+
+```{r}
+setwd("C:/Users/Jean/Desktop/Trabalho_Probabilidade")
+
+```
+
+## 1.3. Importação da Base Original
+
+```{r}
+Obesidade_raw <- read.csv(
+  "ObesityDataSet_raw_and_data_sinthetic.csv",
+  header = TRUE, sep = ",", dec = "."
+)
+```
+
+### 1.3.1. Primeiras linhas
+
+```{r}
+head(Obesidade_raw)
+```
+
+### 1.3.2. Resumo estatístico inicial
+
+```{r}
+summary(Obesidade_raw)
+```
+
+### 1.3.3. Nomes originais das colunas
+
+```{r}
+names(Obesidade_raw)
+
+```
+
+## 1.4. Seleção das Colunas Relevantes
+
+```{r Seleção de Colunas Relevantes}
+Obesidade_clean <- Obesidade_raw[, c(
+  "Gender", "Age", "Weight", "Height", "family_history_with_overweight",
+  "FAVC", "FCVC", "NCP", "CAEC", "SMOKE", "CH2O", "SCC",
+  "FAF", "TUE", "CALC", "MTRANS", "NObeyesdad"
+)]
+
+
+```
+
+## 1.5. Renomeação de Variáveis
+
+```{r Renomeação de Variáveis}
+names(Obesidade_clean) <- c(
+  "Genero", "Idade", "Peso", "Altura", "Historico_Familiar_Obesidade",
+  "Comida_Alta_Caloria", "Consumo_Vegetais", "Refeicoes_Diarias", "Comer_Entre_Refeicoes",
+  "Fumante", "Agua_Diaria", "Monitora_Calorias", "Atividade_Fisica",
+  "Uso_Tecnologia", "Consumo_Alcool", "Meio_Transporte", "Nivel_Obesidade"
+)
+
+```
+
+## 1.6. Padronização e Tradução de Valores Categóricos
+
+### 1.6.1. Gênero
+
+```{r}
+Obesidade_clean$Genero <- c("Masculino", "Feminino")[match(Obesidade_clean$Genero, c("Male", "Female"))]
+```
+
+### 1.6.2. Variáveis binárias
+
+```{r}
+binarios_en <- c("yes", "no")
+binarios_pt <- c("Sim", "Não")
+Obesidade_clean$Historico_Familiar_Obesidade <- binarios_pt[match(Obesidade_clean$Historico_Familiar_Obesidade, binarios_en)]
+Obesidade_clean$Comida_Alta_Caloria <- binarios_pt[match(Obesidade_clean$Comida_Alta_Caloria, binarios_en)]
+Obesidade_clean$Fumante <- binarios_pt[match(Obesidade_clean$Fumante, binarios_en)]
+Obesidade_clean$Monitora_Calorias <- binarios_pt[match(Obesidade_clean$Monitora_Calorias, binarios_en)]
+```
+
+### 1.6.3. Categorias de frequência
+
+```{r}
+freq_en <- c("no","Sometimes","Frequently","Always")
+freq_pt <- c("Não","Às Vezes","Frequentemente","Sempre")
+Obesidade_clean$Comer_Entre_Refeicoes <- freq_pt[match(Obesidade_clean$Comer_Entre_Refeicoes, freq_en)]
+Obesidade_clean$Consumo_Alcool <- freq_pt[match(Obesidade_clean$Consumo_Alcool, freq_en)]
+```
+
+### 1.6.4. Meio de transporte
+
+```{r}
+transport_en <- c("Automobile","Bike","Motorbike","Public_Transportation","Walking")
+transport_pt <- c("Carro","Bicicleta","Moto","Transporte Público","À Pé")
+Obesidade_clean$Meio_Transporte <- transport_pt[match(Obesidade_clean$Meio_Transporte, transport_en)]
+```
+
+### 1.6.5. Níveis de obesidade
+
+```{r}
+nivel_en <- c("Insufficient_Weight","Normal_Weight","Overweight_Level_I","Overweight_Level_II","Obesity_Type_I","Obesity_Type_II","Obesity_Type_III")
+nivel_pt <- c("Abaixo do Peso","Peso Normal","Sobrepeso Nível 1","Sobrepeso Nível 2","Obesidade Nível 1","Obesidade Nível 2","Obesidade Nível 3")
+Obesidade_clean$Nivel_Obesidade <- nivel_pt[match(Obesidade_clean$Nivel_Obesidade, nivel_en)]
+```
+
+## 1.7. Tratamento de valores numéricos
+
+```{r}
+Obesidade_clean$Peso <- round(Obesidade_clean$Peso, 1)
+Obesidade_clean$Altura <- round(Obesidade_clean$Altura, 2)
+Obesidade_clean$Idade <- as.integer(round(Obesidade_clean$Idade))
+Obesidade_clean$Agua_Diaria <- round(Obesidade_clean$Agua_Diaria, 2)
+Obesidade_clean$Uso_Tecnologia <- as.integer(Obesidade_clean$Uso_Tecnologia)
+Obesidade_clean$Atividade_Fisica <- round(Obesidade_clean$Atividade_Fisica, 1)
+```
+
+### 1.7.1. USO de Tecnologia Conversão
+
+```{r}
+valores_antigos5 <- c("0","1","2")
+valores_novos5 <- c("Pouco","Moderado","Prolongado")
+Obesidade_clean$Uso_Tecnologia <- valores_novos5[match(Obesidade_clean$Uso_Tecnologia, valores_antigos5)]
+```
+
+### 1.7.2. Consumo de vegetais e refeições diárias
+
+```{r}
+Obesidade_clean$Consumo_Vegetais <- as.integer(Obesidade_clean$Consumo_Vegetais)
+Obesidade_clean$Refeicoes_Diarias <- as.integer(Obesidade_clean$Refeicoes_Diarias)
+valores_antigos5 <- c("1","2","3")
+valores_novos5 <- c("Pouco","Frequentemente","Sempre")
+Obesidade_clean$Consumo_Vegetais <- valores_novos5[match(Obesidade_clean$Consumo_Vegetais, valores_antigos5)]
+```
+
+## 1.8. Estrutura e tipos de variáveis
+
+```{r}
+typeof(Obesidade_clean$Consumo_Vegetais)
+str(Obesidade_clean)
+```
+
+## 1.9. Conversão para fator
+
+```{r}
+dados <- c(
+  "Genero",
+  "Historico_Familiar_Obesidade",
+  "Comida_Alta_Caloria",
+  "Consumo_Vegetais",
+  "Comer_Entre_Refeicoes",
+  "Fumante",
+  "Monitora_Calorias",
+  "Uso_Tecnologia",
+  "Consumo_Alcool",
+  "Meio_Transporte",
+  "Nivel_Obesidade"
+)
+
+Obesidade_clean[dados] <- lapply(Obesidade_clean[dados], factor)
+
+```
+
+## 1.10. Exportação da Base em formato XLSX
+
+```{r}
+write.csv(
+  Obesidade_clean,
+  file = "Obesidade_clean.csv",
+  row.names = FALSE,
+  fileEncoding = "UTF-8"
+)
+
+library(openxlsx)
+write.xlsx(Obesidade_clean, file = "Obesidade_clean.xlsx")
+```
+## 2. Estatísticas Descritivas de uma Variável Numérica (Peso)
+
+### 2.1. Estatísticas Básicas
+```{r}
+setwd("C:/Users/Jean/Desktop/Trabalho_Probabilidade")
+obesidade <- read.csv("Obesidade_clean.csv")
+obesidade<- within(obesidade, {
+  Genero                      <- factor(Genero)
+  Historico_Familiar_Obesidade<- factor(Historico_Familiar_Obesidade)
+  Comida_Alta_Caloria         <- factor(Comida_Alta_Caloria)
+  Consumo_Vegetais            <- factor(Consumo_Vegetais)
+  Comer_Entre_Refeicoes       <- factor(Comer_Entre_Refeicoes)
+  Fumante                     <- factor(Fumante)
+  Monitora_Calorias           <- factor(Monitora_Calorias)
+  Uso_Tecnologia              <- factor(Uso_Tecnologia)
+  Consumo_Alcool              <- factor(Consumo_Alcool)
+  Meio_Transporte             <- factor(Meio_Transporte)
+  Nivel_Obesidade             <- factor(Nivel_Obesidade)
+})
+maximo_obesidade <- max(obesidade$Peso)
+minimo_obesidade <- min(obesidade$Peso)
+media_obesidade <- mean(obesidade$Peso)
+mediana_obesidade <- median(obesidade$Peso)
+desvio_padr_obesidade <- sd(obesidade$Peso)
+quartis_obesidade <- quantile(obesidade$Peso)
+Amplitude_obesidade <- maximo_obesidade - minimo_obesidade
+
+Nclasses <- nclass.Sturges(obesidade$Peso); Nclasses
+
+amplitude_classes <- ceiling(Amplitude_obesidade / Nclasses)
+
+limiteclas <- seq(minimo_obesidade,maximo_obesidade + amplitude_classes,by = amplitude_classes)
+
+classes <- c(
+  "39 |- 50",
+  "50 |- 61",
+  "61 |- 72",
+  "72 |- 83",
+  "83 |- 94",
+  "94 |- 105",
+  "105 |- 116",
+  "116 |- 127",
+  "127 |- 138",
+  "138 |- 149",
+  "149 |- 160",
+  "160 |- 171",
+  "171 |- 182"
+)
+
+Freq = table(cut(obesidade$Peso, breaks = limiteclas, right=FALSE, 
+                 labels=classes))
+FreqAc <- cumsum(Freq); 
+FreqRel <- prop.table(Freq); 
+FreqRelAc <- cumsum(FreqRel)
+
+TabResul = cbind(Freq,
+                 FreqAc, 
+                 FreqRel = round(FreqRel*100,digits = 2),
+                 FreqRelAc= round(FreqRelAc*100,digits = 2))
+```
+
+### 2.2. Exibição do Histograma
+```{r}
+Pesos <- obesidade$Peso
+
+h <- hist(Pesos, breaks=limiteclas,
+         ylab="Frequencias absolutas",  labels=TRUE,cex.lab = 0.8,main="Histograma Obesidade", 
+         xlim=c(39,182), ylim = c (0,400), col="blue",right=FALSE,border="white",lwd=2)
+lines(c(min(h$breaks), h$mids, max(h$breaks)), 
+      c(0,h$counts, 0), type = "l", col="orange",lwd=3)
+
+```
+
+### 2.3. Exibição do Boxplot da Variável Numérica Peso
+```{r}
+boxplot(obesidade$Peso,  col = "magenta",main="Boxplot Peso Corporal",ylab="Peso (Kg)",outcol="red",outpch = 16)
+```
+
+
+## 3.Análise Bivariada de Duas Variáveis 
+
+
+### 3.1. Convertendo para factor Nivel de Obesidade para garantir a classificação Ordinal
+```{r echo = FALSE}
+obesidade$Nivel_Obesidade <- factor(
+  obesidade$Nivel_Obesidade,
+  levels = c(
+    "Abaixo do Peso",
+    "Peso Normal",
+    "Sobrepeso Nível 1",
+    "Sobrepeso Nível 2",
+    "Obesidade Nível 1",
+    "Obesidade Nível 2",
+    "Obesidade Nível 3"
+  )
+)
+str(obesidade)
+
+```
+
+
+### 3.2. Analisando a distribuição de Níveis de Obesidade por Meio de Transporte
+```{r echo = FALSE}
+meio_transporte_obesidade_tb = table(obesidade$Meio_Transporte, obesidade$Nivel_Obesidade)
+meio_transporte_obesidade_tb <- with(obesidade, table(Meio_Transporte, Nivel_Obesidade))
+
+
+meio_transporte_obesidade_prop <- prop.table(meio_transporte_obesidade_tb)
+meio_transporte_obesidade_prop_porcentagem <- prop.table(meio_transporte_obesidade_tb) * 100
+
+addmargins(meio_transporte_obesidade_prop_porcentagem)
+
+meio_transporte_obesidade_prop_linha <- prop.table(meio_transporte_obesidade_tb, margin = 1)
+meio_transporte_obesidade_prop_linha_pct <- round(meio_transporte_obesidade_prop_linha * 100, 2)
+
+tb_df <- as.data.frame(meio_transporte_obesidade_tb)
+names(tb_df) <- c("Meio_Transporte", "Nivel_Obesidade", "Frequência")
+
+tb_df$Proporcao_Geral <- round(100 * tb_df$Frequência / sum(tb_df$Frequência), 2)
+tb_df$Proporcao_por_Transporte <- as.vector(meio_transporte_obesidade_prop_linha_pct)
+tb_df
+```
+
+
+### 3.3. Exibição do Gráfico Meio de Transporte x Nível de Obesidade
+```{r echo = FALSE}
+barplot(meio_transporte_obesidade_tb,
+        main = "Obesidade x Meio de Transporte",
+        col = c("green", "blue", "yellow", "magenta", "lightblue"),
+        beside = TRUE,
+        legend = TRUE,
+        args.legend = list(x = "topright", bty = "n", ncol = 1))
+
+```
+
+
+
+### 3.4. Interpretação dos Resultados
+
+Os dados analisados revelam um padrão claro de associação entre o tipo de transporte utilizado e o perfil de obesidade dos indivíduos. A partir das frequências absolutas e proporções relativas à amostra total e por modalidade de transporte, destacam-se os seguintes achados:
+
+- **Transporte ativo (À Pé e Bicicleta)** apresenta as menores proporções nos níveis mais elevados de obesidade. Por exemplo, quem anda a pé concentra-se majoritariamente nos níveis “Peso Normal” e “Abaixo do Peso”, totalizando apenas **2.65%** da amostra geral, com proporção interna de **Obesidade Nível 3 igual a 0%**.
+
+- **Carro** exibe uma distribuição mais ampla e expressiva em todos os níveis de obesidade, sendo responsável por aproximadamente **21.6%** da amostra. Destaca-se nos níveis “Obesidade Nível 2”, com **4.5%** da amostra geral e **20.74%** de seus próprios usuários nesse nível — indicando um perfil de maior risco.
+
+- **Transporte Público** representa o grupo mais numeroso (**74.85%** da amostra). A distribuição interna revela uma proporção elevada de indivíduos em “Obesidade Nível 3” — **15.30%** da amostra total — e aproximadamente **25.4%** dos usuários desse transporte pertencem a essa categoria extrema. Isso evidencia uma possível relação entre maior sedentarismo urbano e risco obesogênico.
+
+- **Moto e Bicicleta**, por sua baixa representatividade e concentrações tímidas nos níveis elevados, apresentam menor impacto estatístico isolado. No entanto, os padrões são consistentes com os demais meios ativos.
+
+#### 3.4.1. Conclusão
+
+Os resultados sugerem que o tipo de transporte utilizado está vinculado ao nível de obesidade dos indivíduos. Meios ativos de locomoção parecem associados a perfis mais saudáveis, enquanto o uso frequente de transporte público ou automóvel se relaciona com maior prevalência de sobrepeso e obesidade severa.
+
+Esses achados levantam hipóteses importantes sobre o papel da mobilidade urbana na saúde coletiva e podem subsidiar ações voltadas à promoção do transporte ativo como estratégia preventiva contra obesidade.
+
+## 4. Boxplot entre Variável Numérica e Categórica
+```{r echo = FALSE}
+boxplot(Peso ~ Comida_Alta_Caloria, data = obesidade,
+        col = c("lightblue", "lightgreen"),
+        main = "Peso Corporal x Consumo de Comida Calórica",
+        xlab = "Consome Comida Alta em Calorias?",
+        ylab = "Peso (Kg)",
+        las = 1)
+
+```
+
+
+### 4.1. Interpretação dos Resultados do Boxplot
+
+O boxplot mostra uma diferença marcante no peso corporal entre os grupos que consomem ou não comida calórica com frequência. O grupo consumidor apresenta uma mediana de peso consideravelmente maior (~=90 kg), além de uma maior dispersão e presença de valores extremos. Em contraste, os não consumidores têm peso mais concentrado em torno de 65 kg, com menor variabilidade.
+
+#### 4.1.1. Conclusão
+Podemos perceber por meio desta análise inicial via boxplot que há indícios de uma boa relação entre a variável numérica contínua peso corporal(kg) com a variável categórica binária Consumo de comidas calóricas, indicando posssivelmente que indíviduos cujo consomem com mais frequências este tipo de alimentação tende a apresentar pesos relativaemnte maiores aqueles que não consomem, sendo um potencial fator de risco para a obesidade.
+
+## 5. Matriz de Correlação entre Variáveis Numéricas
+
+### 5.1. Seleção de variáveis numéricas
+
+```{r}
+numerica_colunas <- sapply(obesidade, is.numeric)
+obesidade_numerica <- obesidade[, numerica_colunas]
+```
+
+
+Selecionamos apenas as colunas numéricas da base para análise de correlação entre elas.
+
+
+### 5.2. Matriz de Correlação de Pearson
+```{r echo = FALSE}
+cor_mat <- cor(obesidade_numerica)
+print(round(cor_mat, 2))
+```
+
+
+Apresentamos a matriz de correlação entre todas as variáveis numéricas, arredondada para duas casas decimais. Valores positivos indicam associação direta; negativos indicam inversa.
+
+### 5.3. Principais correlações(Maiores em Módulo)
+```{r echo = FALSE}
+ut <- upper.tri(cor_mat, diag = FALSE)
+top_df <- data.frame(
+  var1 = rownames(cor_mat)[row(cor_mat)[ut]],
+  var2 = colnames(cor_mat)[col(cor_mat)[ut]],
+  cor  = cor_mat[ut]
+)
+
+top_df <- top_df[order(abs(top_df$cor), decreasing = TRUE), ]
+head(top_df, 10)
+
+```
+
+
+Lista das 10 correlações mais fortes (em módulo), para destacar os pares de variáveis com maior associação linear.
+
+### 5.4.Visualização Gráfica da Matrix
+```{r echo = FALSE}
+
+paleta <- colorRampPalette(c("#4575b4", "white", "#d73027"))(200)
+n <- ncol(cor_mat)
+op  <- par(mar = c(6, 6, 2, 2))
+im<- ncol(cor_mat)
+image(1:n, 1:n, t(cor_mat[n:1, ]), col = paleta, axes = FALSE,
+      xlab = "", ylab = "", zlim = c(-1, 1))
+axis(1, at = 1:n, labels = colnames(cor_mat), las = 2, cex.axis = 0.9)
+axis(2, at = 1:n, labels = rev(rownames(cor_mat)), las = 2, cex.axis = 0.9)
+for (i in 1:n) for (j in 1:n) {
+  valor <- round(cor_mat[j, i], 2)
+  text(i, n - j + 1, labels = format(valor, nsmall = 2), cex = 0.8)
+}
+par(op)
+
+```
+
+
+### 5.6.Interpretação dos Resultados da Matrix de Correlação numérica
+
+- Em geral, as correlações são fracas a moderadas. Só há uma correlação moderada (Peso–Altura). Isso sugere relações lineares sutis entre as variáveis, sem indícios de multicolinearidade forte.
+- Destaques:
+
+- Peso–Altura (r≈0.46): correlação moderada positiva; pessoas mais altas tendem a pesar mais — plausível biologicamente.
+
+- Idade–Atividade_Fisica (r≈-0.14): leve tendência de menor atividade com maior idade, mas o efeito é fraco.
+
+- As demais correlações são fracas; úteis para sinalizar direções, mas não bastam sozinhas para conclusões fortes.
+
+### 6. Análise Bivariada de Duas Variáveis 
+
+### 6.1. Seleção de 2 Variáveis Numéricas com Maior Correlação
+```{r}
+x <- obesidade_numerica$Altura
+y <- obesidade_numerica$Peso
+```
+
+Selecionamos as variáveis Peso e Altura por terem maior correlação entre si e geralmente associadas remetem a distribuição de peso corporal por altura o que pode ser útil para avaliar a sua influência posterior no nível de obesidade.
+
+### 6.2. Cálculo da Correlação entre Peso e Altura
+```{r}
+cor_xy <- cor(x, y, use = "complete.obs", method = "pearson")
+cof_det <- cor_xy^2
+cof_det
+
+```
+
+
+Aqui fizemos a correlação e o teste de correlação, além do cálculo do coeficiente de determinação para construção em seguida do gráfico de dispersão com reta ajustada
+
+### 6.3. Cálculo do Modelo de Regressão linear entre os dois dados numéricos
+```{r}
+
+modelo <- lm(y ~ x)
+summary(modelo)
+
+```
+
+### 6.4. Definição dos coeficiente da reta e do coeficiente de Determinação após regressão linear para verificar consistência com a correlação de pearson ao quadrado
+```{r}
+b0 <- coef(modelo)[1]
+b1 <- coef(modelo)[2]
+r2 <- summary(modelo)$r.squared
+
+```
+
+### 6.5. Plotagem do Gráfico de Dispersão com reta Ajustada
+
+```{r echo = FALSE}
+plot(x, y,
+     pch = 19, col = "#2c7fb488",
+     xlab = "Altura (m)", ylab = "Peso",
+     main = "Peso vs Altura")
+abline(modelo, col = "#d73027", lwd = 2)
+
+
+eq <- paste0("y = ", round(b0, 2), " + ", round(b1, 2), "·x")
+correlacao <- cor.test(x, y)
+leg <- paste0("r = ", round(correlacao$estimate, 3),
+              " | p = ", formatC(correlacao$p.value, format = "e", digits = 2),
+              " | R² = ", round(r2, 3))
+legend("topleft", legend = c(eq, leg), bty = "n", cex = 0.9)
+
+```
+
+### 6.6. Interpretação do Gráfico de Dispersão de Altura vs Peso
+
+#### 6.6.1.Interpretação dos Coeficientes
+- Intercepto: -134.075
+Representa o valor estimado do peso quando a altura é igual a zero. Embora esse ponto não tenha significado prático, o intercepto é necessário para definir a reta de regressão.
+- Coeficiente da Altura (x): 129.677
+Indica que, para cada aumento de uma unidade na altura, o peso aumenta em média 129.68 kg. Isso sugere uma relação positiva entre as variáveis.
+- Ambos os coeficientes apresentam p-valores inferiores a 2e-16, demonstrando alta significância estatística. Ou seja, é extremamente improvável que essa relação tenha surgido ao acaso.
+
+#### 6.6.2. Qualidade do Ajuste
+- Coeficiente de Determinação (R²): 0.2137
+Aproximadamente 21.4% da variação no peso é explicada pela altura. Esse valor revela uma associação moderada, sugerindo que outros fatores também influenciam significativamente o peso dos indivíduos.
+- Erro Padrão Residual: 23.23
+Representa a média da diferença entre os valores observados e os valores ajustados pela regressão. Um erro padrão mais baixo indicaria maior precisão nas estimativas.
+
+#### 6.6.3 Conclusão desta Análise
+Com base na análise estatística e no modelo ajustado, é possível concluir que existe uma relação positiva e estatisticamente significativa entre altura e peso. O coeficiente da altura demonstra que, em média, indivíduos mais altos tendem a apresentar maior peso corporal.
+Contudo, essa relação, embora clara, é apenas moderada: o valor de R² indica que menos de um quarto da variação no peso pode ser explicada pela altura. Isso sugere que outros fatores — como idade, sexo, composição corporal ou hábitos de vida — também desempenham papel relevante.
+Portanto, o modelo é útil para identificar tendências gerais, mas não é suficiente para realizar previsões precisas de peso com base apenas na altura.
+
+## 7. Formulação e Teste de Três Perguntas
+
+- *As perguntas a serem analisadas e respondidas com base na análise exploratória de dados serão:*
+
+**1) Existe associação entre o tipo de transporte utilizado e o nível de obesidade?**
+
+
+**2) Indivíduos que consomem comida calórica frequentemente tendem a ter maior peso corporal?**
+
+
+**3)A relação entre altura e peso corporal apresenta diferenças significativas entre indivíduos com e sem histórico familiar de obesidade?**
+
+
+
+
+### 7.1. Visualização Gráfica para ajudar a responder a questão 1.
+
+```{r echo = FALSE}
+barplot(meio_transporte_obesidade_tb,
+        main = "Obesidade x Meio de Transporte",
+        col = c("green", "blue", "yellow", "magenta", "lightblue"),
+        beside = TRUE,
+        legend = TRUE,
+        args.legend = list(x = "topright", bty = "n", ncol = 1))
+```
+
+Note que o gráfico plotado aqui foi utilizado na análise entre duas variáveis categóricas aqui daremos aprofundamento da interpretação complementando com outros testes.
+
+### 7.2. Teste do Qui-Quadrado com simulação com Monte Carlo
+```{r}
+set.seed(100)
+B <- 10000
+teste_chi <- chisq.test(meio_transporte_obesidade_tb, simulate.p.value = TRUE, B = B)
+
+```
+
+### 7.3. Resultado do Teste Qui-Quadrado
+```{r echo = FALSE}
+resultado_chi <- data.frame(
+  Estatistica = round(teste_chi$statistic, 2),
+  Graus_de_Liberdade = NA,
+  P_valor = ifelse(teste_chi$p.value < 1/(B+1),
+                   paste0("< ", format(1/(B+1), scientific = TRUE)),
+                   format.pval(teste_chi$p.value, digits = 4, eps = 1e-4)),
+  Conclusao = ifelse(teste_chi$p.value < 0.05,
+                     "Associação significativa entre as variáveis",
+                     "Não há evidência de associação significativa")
+)
+knitr::kable(
+  resultado_chi,
+  caption = "Resumo do Teste Qui-quadrado com Simulação Monte Carlo",
+  align = "c"
+)
+```
+### 7.4. Análise e Resposta a primeira Pergunta:
+
+Para responder a pergunta, avaliou-se a existência de associação entre o meio de transporte habitual e o nível de obesidade na amostra por meio do teste de independência qui-quadrado, com simulação Monte Carlo (B = 10 000). O resultado apontou estatística de X^2 = 292,59 e valor-p inferior a 0,0001. Diante desse valor-p muito menor que o nível de significância de 0,05, rejeita-se a hipótese nula de independência entre as variáveis, indicando associação estatisticamente significativa entre o tipo de transporte utilizado e o grau de obesidade dos participantes.
+
+
+O gráfico de barras empilhadas (Figura X) ilustra com clareza o padrão de distribuição dos níveis nutricionais conforme a modalidade de transporte. Observa-se que:
+
+
+- Entre os usuários de transporte motorizado privado (automóvel e motocicleta), a proporção de indivíduos classificados como obesos é substancialmente maior, representando a maior fatia da barra correspondente.
+
+
+- Nos modos ativos (caminhada e bicicleta), predominam participantes com peso normal e sobrepeso leve, e a fração de obesos é marcadamente menor.
+
+
+Em transportes coletivos (ônibus e metrô), nota-se perfil intermediário, com distribuição mais balanceada entre sobrepeso e obesidade leve.
+
+Portanto, esses padrões visuais corroboram o resultado do teste qui-quadrado, sugerindo que as escolhas de deslocamento estão diretamente relacionadas ao status de obesidade. Assim, conclui-se que há uma relação inversa de transportes ativos a medida que a níveis de obesidade crescem e o uso em grande parte de meios de transporte menos ativos como o transporte público, sendo portanto um fator importante para previsão da obesidade.
+
+### 7.5. Visualização Gráfica para ajudar a responder a questão 2.
+
+```{r echo = FALSE}
+boxplot(Peso ~ Comida_Alta_Caloria, data = obesidade,
+        col = c("lightblue", "lightgreen"),
+        main = "Peso Corporal x Consumo de Comida Calórica",
+        xlab = "Consome Comida Alta em Calorias?",
+        ylab = "Peso (Kg)",
+        las = 1)
+```
+
+### 7.6. Análise de Distribuição de Peso Corporal por Consumo de Comida Calórica
+
+```{r echo = FALSE}
+resultado <- aggregate(Peso ~ Comida_Alta_Caloria, data = obesidade,
+          FUN = function(x) c(n = length(x),
+                              mean = mean(x),
+                              sd = sd(x),
+                              se = sd(x)/sqrt(length(x))))
+resultado_df <- do.call(data.frame, resultado)
+knitr::kable(resultado_df, digits = 2, caption = "Estatísticas de Peso por Consumo de Comida Calórica")
+
+```
+
+### 7.7. Visualização do T test para confirmação das diferenças nas médias entre Peso Corporal e o Consumo Calórico.
+
+```{r echo = FALSE}
+t_test_result <- t.test(Peso ~ Comida_Alta_Caloria, data = obesidade)
+
+t_df <- data.frame(
+  Estatística_t = round(t_test_result$statistic, 3),
+  Graus_de_Liberdade = round(t_test_result$parameter, 0),
+  P_valor = signif(t_test_result$p.value, 3),
+  Média_Grupo1 = round(t_test_result$estimate[1], 2),
+  Média_Grupo2 = round(t_test_result$estimate[2], 2),
+  IC_95_Lower = round(t_test_result$conf.int[1], 2),
+  IC_95_Upper = round(t_test_result$conf.int[2], 2),
+  Hipótese_Alternativa = t_test_result$alternative,
+  Método = t_test_result$method,
+  Conclusão = ifelse(t_test_result$p.value < 0.05, 
+                     "Diferença significativa", 
+                     "Sem diferença significativa")
+)
+
+knitr::kable(t_df, caption = "Resumo completo do Teste t")
+
+
+```
+
+### 7.8.Análise e Resposta a segunda pergunta:
+
+A análise descritiva evidenciou que indivíduos que não consomem comida alta em calorias apresentaram peso corporal médio de 66,91 kg (DP = 17,10; n = 245), enquanto aqueles que consomem apresentaram média de 89,17 kg (DP = 26,08; n = 1866). A diferença entre as médias foi de aproximadamente 22,26 kg. Para verificar a significância estatística dessa diferença, foi realizado o teste t de Welch para amostras independentes, cujo resultado indicou valor t = -17,832, com aproximadamente 411 graus de liberdade e valor-p < 0,001. O intervalo de confiança de 95% para a diferença de médias variou de -24,72 kg a -19,81 kg, não incluindo o valor nulo, o que confirma a robustez do resultado. Assim, conclui-se que indivíduos que consomem comida alta em calorias frequentemente tendem a apresentar maior peso corporal em comparação àqueles que não consomem, sendo essa diferença estatisticamente significativa.
+´
+Portanto, sim há uma relação muito significativo como observado pelo uso de test t pelas diferenças entre médias e desvio padrão e pelo próprio padrão observado no gráfico há uma maior peso associado a consumo de comida de alta calorias, havendo portanto uma boa relação com a obesidade em si.
+
+### 7.9. Visualização Gráfica para ajudar a responder a questão 2.
+
+*Inicialmente será plotado aqui novamente o gráfico que mostra apenas a distribuição e relação entre peso e altura.*
+
+```{r echo = FALSE}
+plot(x, y,
+     pch = 19, col = "#2c7fb488",
+     xlab = "Altura (m)", ylab = "Peso",
+     main = "Peso vs Altura")
+abline(modelo, col = "#d73027", lwd = 2)
+
+eq <- paste0("y = ", round(b0, 2), " + ", round(b1, 2), "·x")
+correlacao <- cor.test(x, y)
+leg <- paste0("r = ", round(correlacao$estimate, 3),
+              " | p = ", formatC(correlacao$p.value, format = "e", digits = 2),
+              " | R² = ", round(r2, 3))
+legend("topleft", legend = c(eq, leg), bty = "n", cex = 0.9)
+
+
+```
+
+
+### 7.10. Separação entre grupos com histórico familiar e aqueles sem histórico de obesidade e definição do modelo de regressão linear.
+
+```{r echo = FALSE}
+
+extrair_coefs <- function(modelo) {
+  coefs <- as.data.frame(summary(modelo)$coefficients)
+  coefs$Termo <- rownames(coefs)
+  rownames(coefs) <- NULL
+  coefs <- coefs[, c("Termo", "Estimate", "Std. Error", "t value", "Pr(>|t|)")]
+  colnames(coefs) <- c("Termo", "Estimativa", "Erro_Padrao", "t_valor", "p_valor")
+  
+  coefs$p_valor <- sapply(coefs$p_valor, function(p) {
+    if (p < 1e-4) {
+      formatC(p, format = "e", digits = 2)
+    } else {
+      round(p, 4)
+    }
+  })
+  
+  return(coefs)
+}
+
+
+extrair_residuos <- function(modelo) {
+  resumos <- summary(modelo)$residuals
+  resumo_df <- data.frame(
+    Estatistica = c("Min.", "1º Quartil", "Mediana", "3º Quartil", "Máx."),
+    Valor = as.numeric(c(min(resumos), quantile(resumos, 0.25), median(resumos), quantile(resumos, 0.75), max(resumos)))
+  )
+  return(resumo_df)
+}
+
+
+extrair_metricas <- function(modelo) {
+  resumo <- summary(modelo)
+  fstat <- resumo$fstatistic
+  pvalorF <- pf(fstat[1], fstat[2], fstat[3], lower.tail = FALSE)
+
+  pvalorF_fmt <- ifelse(pvalorF < 1e-4, formatC(pvalorF, format = "e", digits = 2), round(pvalorF, 4))
+
+  metricas <- data.frame(
+    Estatistica = c("R-quadrado", "R-quadrado Ajustado", "Erro Padrão Residual", "F-Statistic", 
+                    "Graus de Liberdade 1", "Graus de Liberdade 2", "p-valor F"),
+    Valor = c(round(resumo$r.squared, 4),
+              round(resumo$adj.r.squared, 4),
+              round(resumo$sigma, 4),
+              round(fstat[1], 4),
+              fstat[2],
+              fstat[3],
+              pvalorF_fmt)
+  )
+  return(metricas)
+}
+
+
+grupo_sim <- subset(obesidade, Historico_Familiar_Obesidade == "Sim")
+grupo_nao <- subset(obesidade, Historico_Familiar_Obesidade == "Não")
+
+modelo_sim <- lm(Peso ~ Altura, data = grupo_sim)
+modelo_nao <- lm(Peso ~ Altura, data = grupo_nao)
+
+
+coefs_sim <- extrair_coefs(modelo_sim)
+residuos_sim <- extrair_residuos(modelo_sim)
+metricas_sim <- extrair_metricas(modelo_sim)
+
+coefs_nao <- extrair_coefs(modelo_nao)
+residuos_nao <- extrair_residuos(modelo_nao)
+metricas_nao <- extrair_metricas(modelo_nao)
+
+
+knitr::kable(coefs_sim, digits = 4, caption = "Coeficientes do Modelo - Grupo com Histórico Familiar 'Sim'") 
+knitr::kable(residuos_sim, digits = 4, caption = "Resumo dos Resíduos - Grupo com Histórico Familiar 'Sim'")
+knitr::kable(metricas_sim, digits = 4, caption = "Métricas Gerais do Modelo - Grupo com Histórico Familiar 'Sim'")
+
+knitr::kable(coefs_nao, digits = 4, caption = "Coeficientes do Modelo - Grupo com Histórico Familiar 'Não'") 
+knitr::kable(residuos_nao, digits = 4, caption = "Resumo dos Resíduos - Grupo com Histórico Familiar 'Não'")
+knitr::kable(metricas_nao, digits = 4, caption = "Métricas Gerais do Modelo - Grupo com Histórico Familiar 'Não'")
+
+
+
+
+```
+
+
+### 7.11. Plotagem de Gráfico para visualização dos dois grupos em relação ao peso e altura.
+
+```{r echo = FALSE}
+plot(grupo_sim$Altura, grupo_sim$Peso,
+     pch = 16, col = "red",
+     xlab = "Altura", ylab = "Peso",
+     main = "Peso vs Altura por Historico Familiar")
+
+points(grupo_nao$Altura, grupo_nao$Peso,
+       pch = 17, col = "blue")
+
+abline(modelo_sim, col = "red", lwd = 2)
+abline(modelo_nao, col = "blue", lwd = 2)
+
+legend("topleft",
+       legend = c("Historico: Sim", "Historico: Nao"),
+       col = c("red", "blue"),
+       pch = c(16, 17))
+
+```
+
+### 7.12. Utilização de Regressão linear com interação para ver se a influencia altura peso é diferente ao interagir com o histórico familiar de obesidade
+
+```{r echo = FALSE}
+modelo_interacao <- lm(Peso ~ Altura * Historico_Familiar_Obesidade, data = obesidade)
+resumo <- summary(modelo_interacao)
+
+coeficientes <- as.data.frame(resumo$coefficients)
+coeficientes$Termo <- rownames(coeficientes)
+rownames(coeficientes) <- NULL
+coeficientes <- coeficientes[, c("Termo", "Estimate", "Std. Error", "t value", "Pr(>|t|)")]
+colnames(coeficientes) <- c("Termo", "Estimativa", "Erro_Padrao", "t_valor", "p_valor")
+
+# Formatar p-valores pequenos para notação científica
+coeficientes$p_valor <- sapply(coeficientes$p_valor, function(p) {
+  if (p < 1e-4) {
+    formatC(p, format = "e", digits = 2)
+  } else {
+    round(p, 4)
+  }
+})
+
+valores_residuos <- resumo$residuals
+
+residuos <- data.frame(
+  Estatistica = c("Min.", "1º Quartil", "Mediana", "3º Quartil", "Máx."),
+  Valor = as.numeric(c(
+    min(valores_residuos),
+    quantile(valores_residuos, 0.25),
+    median(valores_residuos),
+    quantile(valores_residuos, 0.75),
+    max(valores_residuos)
+  ))
+)
+
+fstat <- resumo$fstatistic
+p_valor_f <- pf(fstat[1], fstat[2], fstat[3], lower.tail = FALSE)
+p_valor_f_fmt <- ifelse(p_valor_f < 1e-4, formatC(p_valor_f, format = "e", digits = 2), round(p_valor_f, 4))
+
+metricas <- data.frame(
+  Estatistica = c("R-quadrado", "R-quadrado Ajustado", "Erro Padrão Residual", "F-Statistic", 
+                  "Graus de Liberdade 1", "Graus de Liberdade 2", "p-valor F"),
+  Valor = c(resumo$r.squared,
+            resumo$adj.r.squared,
+            resumo$sigma,
+            round(fstat[1], 4),
+            fstat[2],
+            fstat[3],
+            p_valor_f_fmt)
+)
+
+knitr::kable(coeficientes, digits = 4, caption = "Coeficientes do Modelo")
+knitr::kable(residuos, digits = 4, caption = "Resumo dos Resíduos")
+knitr::kable(metricas, digits = 4, caption = "Métricas Gerais do Modelo")
+
+```
+
+
+### 7.13. Uso de IMC já que peso e altura tem a maior correlação entre si utilizando IMC que relaciona as duas conseguimos ao mesmo tempo relacionar com o historico familiar obesidade além de uso de t test para validar a possível hipótese.
+
+
+```{r echo = FALSE}
+obesidade$IMC <- obesidade$Peso / (obesidade$Altura)^2
+
+
+teste_imc <- t.test(IMC ~ Historico_Familiar_Obesidade, data = obesidade)
+
+p_valor_ttest_fmt <- ifelse(teste_imc$p.value < 1e-4, 
+                           formatC(teste_imc$p.value, format = "e", digits = 2),
+                           round(teste_imc$p.value, 4))
+
+res_ttest_imc <- data.frame(
+  Estatistica = c("Estatística t", "Graus de Liberdade", "p-valor", "Média Grupo 'Sim'", "Média Grupo 'Não'"),
+  Valor = c(
+    round(as.numeric(teste_imc$statistic), 4),
+    round(as.numeric(teste_imc$parameter), 4),
+    p_valor_ttest_fmt,
+    round(teste_imc$estimate[1], 4),
+    round(teste_imc$estimate[2], 4)
+  )
+)
+
+
+modelo_imc <- lm(IMC ~ Historico_Familiar_Obesidade, data = obesidade)
+resumo_imc <- summary(modelo_imc)
+
+extrair_coefs <- function(modelo) {
+  coefs <- as.data.frame(summary(modelo)$coefficients)
+  coefs$Termo <- rownames(coefs)
+  rownames(coefs) <- NULL
+  coefs <- coefs[, c("Termo", "Estimate", "Std. Error", "t value", "Pr(>|t|)")]
+  colnames(coefs) <- c("Termo", "Estimativa", "Erro_Padrao", "t_valor", "p_valor")
+  
+
+  coefs$p_valor <- sapply(coefs$p_valor, function(p) {
+    if (p < 1e-4) formatC(p, format = "e", digits = 2) else round(p, 4)
+  })
+  
+  
+  coefs$Estimativa <- round(coefs$Estimativa, 4)
+  coefs$Erro_Padrao <- round(coefs$Erro_Padrao, 4)
+  coefs$t_valor <- round(coefs$t_valor, 4)
+  
+  return(coefs)
+}
+
+extrair_residuos <- function(modelo) {
+  resumos <- summary(modelo)$residuals
+  resumo_df <- data.frame(
+    Estatistica = c("Min.", "1º Quartil", "Mediana", "3º Quartil", "Máx."),
+    Valor = round(as.numeric(c(min(resumos), quantile(resumos, 0.25), median(resumos), quantile(resumos, 0.75), max(resumos))), 4)
+  )
+  return(resumo_df)
+}
+
+extrair_metricas <- function(modelo) {
+  resumo <- summary(modelo)
+  fstat <- resumo$fstatistic
+  pvalorF <- pf(fstat[1], fstat[2], fstat[3], lower.tail = FALSE)
+  
+  pvalorF_fmt <- ifelse(pvalorF < 1e-4, formatC(pvalorF, format = "e", digits = 2), round(pvalorF, 4))
+  
+  metricas <- data.frame(
+    Estatistica = c("R-quadrado", "R-quadrado Ajustado", "Erro Padrão Residual", "F-Statistic", "Graus de Liberdade 1", "Graus de Liberdade 2", "p-valor F"),
+    Valor = c(round(resumo$r.squared, 4),
+              round(resumo$adj.r.squared, 4),
+              round(resumo$sigma, 4),
+              round(fstat[1], 4),
+              fstat[2],
+              fstat[3],
+              pvalorF_fmt)
+  )
+  return(metricas)
+}
+
+coefs_imc <- extrair_coefs(modelo_imc)
+residuos_imc <- extrair_residuos(modelo_imc)
+metricas_imc <- extrair_metricas(modelo_imc)
+
+knitr::kable(res_ttest_imc, digits = 4, caption = "Resultados do Teste t para IMC")
+knitr::kable(coefs_imc, digits = 4, caption = "Coeficientes do Modelo Linear para IMC")
+knitr::kable(residuos_imc, digits = 4, caption = "Resumo dos Resíduos do Modelo IMC")
+knitr::kable(metricas_imc, digits = 4, caption = "Métricas Gerais do Modelo Linear para IMC")
+
+
+```
+
+
+### 7.14. Análise e Resposta a terceira pergunta:
+Para investigar se a relação entre altura e peso corporal apresenta diferenças significativas entre indivíduos com e sem histórico familiar de obesidade, realizamos uma análise de regressão linear separada para cada grupo, bem como uma análise de regressão com termo de interação.
+
+Modelos de regressão separados:
+
+Para o grupo com histórico familiar de obesidade, o modelo de regressão linear mostrou que a altura é um preditor significativo do peso corporal (p < 0.001), com coeficiente estimado de 105.88 (Erro padrão = 6.00). O modelo apresentou um R² de 0.153, indicando que aproximadamente 15,3% da variação do peso é explicada pela altura neste grupo.
+
+Para o grupo sem histórico familiar, a altura também foi um preditor significativo do peso (p < 0.001), com coeficiente estimado de 83.52 (Erro padrão = 6.35). Neste caso, o R² foi de 0.311, indicando maior explicação da variação do peso pela altura nesse grupo (31,1%).
+
+Modelo de regressão com interação:
+
+Ao incluir o termo de interação entre altura e histórico familiar de obesidade no modelo, verificamos que o coeficiente da interação (Altura:Histórico_Familiar_ObesidadeSim) foi positivo (22.36) e próximo do limiar de significância estatística (p = 0.0743), sugerindo uma tendência para que a relação entre altura e peso seja mais acentuada para indivíduos com histórico familiar de obesidade, embora não tenha atingido significância estatística ao nível de 5%.
+
+Visualização gráfica:
+
+Os gráficos de dispersão e as linhas de regressão ajustadas para cada grupo corroboram os resultados, mostrando inclinações maiores para o grupo com histórico familiar, evidenciando uma relação mais forte entre altura e peso nesse grupo.
+
+Conclusão:
+
+Os dados indicam que existe uma diferença na relação entre altura e peso corporal entre indivíduos com e sem histórico familiar de obesidade, sendo a relação mais forte (maior coeficiente) para aqueles com histórico familiar. Contudo, essa diferença não atingiu significância estatística convencional no modelo de interação (p > 0.05), sugerindo que, embora haja uma tendência, não podemos afirmar com plena confiança estatística que a influência da altura no peso difere de forma significativa entre os grupos.
