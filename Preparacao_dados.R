@@ -12,14 +12,12 @@ summary(Obesidade_raw)
 names(Obesidade_raw)
 
 
-# Selecionar colunas corretas
 Obesidade_clean <- Obesidade_raw[, c(
   "Gender", "Age", "Weight", "Height", "family_history_with_overweight",
   "FAVC", "FCVC", "NCP", "CAEC", "SMOKE", "CH2O", "SCC",
   "FAF", "TUE", "CALC", "MTRANS", "NObeyesdad"
 )]
 
-# Renomear colunas
 names(Obesidade_clean) <- c(
   "Genero", "Idade", "Peso", "Altura", "Historico_Familiar_Obesidade",
   "Comida_Alta_Caloria", "Consumo_Vegetais", "Refeicoes_Diarias", "Comer_Entre_Refeicoes",
@@ -27,11 +25,9 @@ names(Obesidade_clean) <- c(
   "Uso_Tecnologia", "Consumo_Alcool", "Meio_Transporte", "Nivel_Obesidade"
 )
 
-# Vetor de substituições
 valores_antigos <- c("Male", "Female")
 valores_novos <- c("Masculino", "Feminino")
 
-# Substituir usando match
 Obesidade_clean$Genero <- valores_novos[match(Obesidade_clean$Genero, valores_antigos)]
 
 valores_antigos1 <- c("yes","no")
@@ -90,6 +86,22 @@ valores_novos5 <- c("Pouco","Frequentemente","Sempre")
 Obesidade_clean$Consumo_Vegetais <- valores_novos5[match(Obesidade_clean$Consumo_Vegetais,valores_antigos5)]
 
 typeof(Obesidade_clean$Consumo_Vegetais)
+typeof(Obesidade_clean$Refeicoes_Diarias)
+typeof(Obesidade_clean$Genero)
+typeof(Obesidade_clean$Idade)
+typeof(Obesidade_clean$Uso_Tecnologia)
+typeof(Obesidade_clean$Atividade_Fisica)
+typeof(Obesidade_clean$Peso)
+typeof(obesidade_clean$Consumo_Alcool)
+typeof(obesidade_clean$Altura)
+typeof(obesidade_clean$Historico_Familiar_Obesidade)
+typeof(obesidade_clean$Fumante)
+typeof(obesidade_clean$Meio_Transporte)
+typeof(Obesidade_clean$Comida_Alta_Caloria)
+typeof(Obesidade_clean$Nivel_Obesidade)
+typeof(Obesidade_clean$Comer_Entre_Refeicoes)
+typeof(Obesidade_clean$Agua_Diaria)
+typeof(Obesidade_clean$Monitora_Calorias)
 
 str(Obesidade_clean)
 
@@ -118,7 +130,6 @@ write.csv(Obesidade_clean,
 
 library(openxlsx)
 
-# Exporta para arquivo Excel
 write.xlsx(Obesidade_clean, file = "Obesidade_clean.xlsx")
 
 

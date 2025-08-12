@@ -1,15 +1,9 @@
 ---
 title: "Relatório AB1.1 - Probabilidade e Estatística"
-author: |
-  Alunos:
-  
-    Jean Felipe Duarte Tenório  
-    
-    Jayme Vinicius Esteves Pedroza Melo
-                        
-
-  Professor:
-    Petrúcio Antônio Medeiros Barros
+author:
+  - Jean Felipe Duarte Tenório
+  - Jayme Vinicius Esteves Pedroza Melo
+  - Petrúcio Antônio Medeiros Barros (Professor)
 date: "`r format(Sys.Date(), '%d-%m-%Y')`"
 output:
   html_document:
@@ -26,12 +20,11 @@ fontsize: 11pt
 geometry: margin=1in
 ---
 
-
 # **Contexto Geral do Projeto de acordo com a base de dados Escolhida:**
 
 # Introdução e Contexto do Trabalho
 
-Este trabalho tem como objetivo realizar uma **Análise Exploratória de Dados (AED)** e aplicar técnicas estatísticas descritivas e bivariadas para compreender padrões e relações presentes na base de dados escolhida. Todas as análises serão desenvolvidas no **R*.
+Este trabalho tem como objetivo realizar uma **Análise Exploratória de Dados (AED)** e aplicar técnicas estatísticas descritivas e bivariadas para compreender padrões e relações presentes na base de dados escolhida. Todas as análises serão desenvolvidas no **R**.
 
 ## Contexto Geral da Base de Dados
 
@@ -39,7 +32,7 @@ O conjunto de dados **"Estimation of Obesity Levels Based on Eating Habits and P
 Ele contém informações sobre **hábitos alimentares**, **condições físicas** e **características demográficas** de **2 111 indivíduos** de **México, Peru e Colômbia**, com idades entre **14 e 61 anos**.
 
 O objetivo principal é **estimar o nível de obesidade** com base nas variáveis coletadas.\
-A variável-alvo **`NObesity`** (Nível de Obesidade) possui sete categorias: - Abaixo do Peso - Peso Normal - Sobrepeso Nível 1 - Sobrepeso Nível 2 - Obesidade Nível 1 - Obesidade Nível 2 - Obesidade Nível 3
+A variável-alvo **`NObesity`** (Nível de Obesidade) possui sete categorias: - Abaixo do Peso - Peso Normal - Sobrepeso Nível 1 - Sobrepeso Nível 2 - Obesidade Nível 1 - Obesidade Nível 2 - Obesidade Nível 3.
 
 ### Composição dos Dados
 
@@ -134,7 +127,7 @@ Nesta etapa, realizamos a preparação inicial da base escolhida, contemplando:
 
 ## 1.1. Limpeza do ambiente
 
-### 1.1.1. Remove todos os objetos carregados na sessão
+### 1.1.1. Remove todos os objetos carregados na sessão.
 
 ```{r}
 rm(list = ls())
@@ -160,6 +153,7 @@ Obesidade_raw <- read.csv(
 
 ```{r}
 head(Obesidade_raw)
+tail(Obesidade_raw)
 ```
 
 ### 1.3.2. Resumo estatístico inicial
@@ -197,12 +191,12 @@ names(Obesidade_clean) <- c(
   "Uso_Tecnologia", "Consumo_Alcool", "Meio_Transporte", "Nivel_Obesidade"
 )
 
+names(Obesidade_clean)
 ```
 
 ## 1.6. Padronização e Tradução de Valores Categóricos
 
 ### 1.6.1. Gênero
-
 ```{r}
 Obesidade_clean$Genero <- c("Masculino", "Feminino")[match(Obesidade_clean$Genero, c("Male", "Female"))]
 ```
@@ -254,7 +248,7 @@ Obesidade_clean$Uso_Tecnologia <- as.integer(Obesidade_clean$Uso_Tecnologia)
 Obesidade_clean$Atividade_Fisica <- round(Obesidade_clean$Atividade_Fisica, 1)
 ```
 
-### 1.7.1. USO de Tecnologia Conversão
+### 1.7.1. Uso de Tecnologia Conversão
 
 ```{r}
 valores_antigos5 <- c("0","1","2")
@@ -276,6 +270,24 @@ Obesidade_clean$Consumo_Vegetais <- valores_novos5[match(Obesidade_clean$Consumo
 
 ```{r}
 typeof(Obesidade_clean$Consumo_Vegetais)
+typeof(Obesidade_clean$Refeicoes_Diarias)
+typeof(Obesidade_clean$Genero)
+typeof(Obesidade_clean$Idade)
+typeof(Obesidade_clean$Uso_Tecnologia)
+typeof(Obesidade_clean$Atividade_Fisica)
+typeof(Obesidade_clean$Peso)
+typeof(Obesidade_clean$Consumo_Alcool)
+typeof(Obesidade_clean$Altura)
+typeof(Obesidade_clean$Historico_Familiar_Obesidade)
+typeof(Obesidade_clean$Fumante)
+typeof(Obesidade_clean$Meio_Transporte)
+typeof(Obesidade_clean$Comida_Alta_Caloria)
+typeof(Obesidade_clean$Nivel_Obesidade)
+typeof(Obesidade_clean$Comer_Entre_Refeicoes)
+typeof(Obesidade_clean$Agua_Diaria)
+typeof(Obesidade_clean$Monitora_Calorias)
+
+
 str(Obesidade_clean)
 ```
 
@@ -297,7 +309,7 @@ dados <- c(
 )
 
 Obesidade_clean[dados] <- lapply(Obesidade_clean[dados], factor)
-
+str(Obesidade_clean)
 ```
 
 ## 1.10. Exportação da Base em formato XLSX
@@ -313,6 +325,9 @@ write.csv(
 library(openxlsx)
 write.xlsx(Obesidade_clean, file = "Obesidade_clean.xlsx")
 ```
+
+
+
 ## 2. Estatísticas Descritivas de uma Variável Numérica (Peso)
 
 ### 2.1. Estatísticas Básicas
@@ -392,7 +407,7 @@ boxplot(obesidade$Peso,  col = "magenta",main="Boxplot Peso Corporal",ylab="Peso
 ```
 
 
-## 3.Análise Bivariada de Duas Variáveis 
+## 3.Análise Bivariada de Duas Variáveis
 
 
 ### 3.1. Convertendo para factor Nivel de Obesidade para garantir a classificação Ordinal
@@ -526,7 +541,7 @@ head(top_df, 10)
 
 Lista das 10 correlações mais fortes (em módulo), para destacar os pares de variáveis com maior associação linear.
 
-### 5.4.Visualização Gráfica da Matrix
+### 5.4.Visualização Gráfica da Matriz
 ```{r echo = FALSE}
 
 paleta <- colorRampPalette(c("#4575b4", "white", "#d73027"))(200)
@@ -546,7 +561,7 @@ par(op)
 ```
 
 
-### 5.6.Interpretação dos Resultados da Matrix de Correlação numérica
+### 5.6.Interpretação dos Resultados da Matriz de Correlação numérica
 
 - Em geral, as correlações são fracas a moderadas. Só há uma correlação moderada (Peso–Altura). Isso sugere relações lineares sutis entre as variáveis, sem indícios de multicolinearidade forte.
 - Destaques:
@@ -557,7 +572,7 @@ par(op)
 
 - As demais correlações são fracas; úteis para sinalizar direções, mas não bastam sozinhas para conclusões fortes.
 
-### 6. Análise Bivariada de Duas Variáveis 
+### 6. Análise Bivariada de Duas Variáveis
 
 ### 6.1. Seleção de 2 Variáveis Numéricas com Maior Correlação
 ```{r}
@@ -576,7 +591,7 @@ cof_det
 ```
 
 
-Aqui fizemos a correlação e o teste de correlação, além do cálculo do coeficiente de determinação para construção em seguida do gráfico de dispersão com reta ajustada
+Aqui fizemos a correlação e o teste de correlação, além do cálculo do coeficiente de determinação para construção em seguida do gráfico de dispersão com reta ajustada.
 
 ### 6.3. Cálculo do Modelo de Regressão linear entre os dois dados numéricos
 ```{r}
@@ -645,10 +660,10 @@ Portanto, o modelo é útil para identificar tendências gerais, mas não é suf
 
 **3)A relação entre altura e peso corporal apresenta diferenças significativas entre indivíduos com e sem histórico familiar de obesidade?**
 
+A formulação das 3 questões propostas foram fundamentadas nas análises bivariadas executadas nos tópicos 3, 4 e 6 e robustecidas por testes estatísticos específicos para cada tipo de variável.Além disso, na pergunta 3, inicialmente é feito uma retomada da análise de peso e altura e posterior segregação dessa relação entre aqueles com e sem histórico familiar de obesidade a fim de enriquecer a análise e integrar um terceiro fator a análise bivariada para garantir uma análise mais profunda e técnica.
 
 
-
-### 7.1. Visualização Gráfica para ajudar a responder a questão 1.
+### 7.1. Visualização Gráfica para ajudar a responder a questão 1
 
 ```{r echo = FALSE}
 barplot(meio_transporte_obesidade_tb,
@@ -687,7 +702,7 @@ knitr::kable(
   align = "c"
 )
 ```
-### 7.4. Análise e Resposta a primeira Pergunta:
+### 7.4. Análise e Resposta a primeira Pergunta
 
 Para responder a pergunta, avaliou-se a existência de associação entre o meio de transporte habitual e o nível de obesidade na amostra por meio do teste de independência qui-quadrado, com simulação Monte Carlo (B = 10 000). O resultado apontou estatística de X^2 = 292,59 e valor-p inferior a 0,0001. Diante desse valor-p muito menor que o nível de significância de 0,05, rejeita-se a hipótese nula de independência entre as variáveis, indicando associação estatisticamente significativa entre o tipo de transporte utilizado e o grau de obesidade dos participantes.
 
@@ -705,7 +720,7 @@ Em transportes coletivos (ônibus e metrô), nota-se perfil intermediário, com 
 
 Portanto, esses padrões visuais corroboram o resultado do teste qui-quadrado, sugerindo que as escolhas de deslocamento estão diretamente relacionadas ao status de obesidade. Assim, conclui-se que há uma relação inversa de transportes ativos a medida que a níveis de obesidade crescem e o uso em grande parte de meios de transporte menos ativos como o transporte público, sendo portanto um fator importante para previsão da obesidade.
 
-### 7.5. Visualização Gráfica para ajudar a responder a questão 2.
+### 7.5. Visualização Gráfica para ajudar a responder a questão 2
 
 ```{r echo = FALSE}
 boxplot(Peso ~ Comida_Alta_Caloria, data = obesidade,
@@ -729,7 +744,7 @@ knitr::kable(resultado_df, digits = 2, caption = "Estatísticas de Peso por Cons
 
 ```
 
-### 7.7. Visualização do T test para confirmação das diferenças nas médias entre Peso Corporal e o Consumo Calórico.
+### 7.7. Visualização do T test para confirmação das diferenças nas médias entre Peso Corporal e o Consumo Calórico
 
 ```{r echo = FALSE}
 t_test_result <- t.test(Peso ~ Comida_Alta_Caloria, data = obesidade)
@@ -754,15 +769,15 @@ knitr::kable(t_df, caption = "Resumo completo do Teste t")
 
 ```
 
-### 7.8.Análise e Resposta a segunda pergunta:
+### 7.8.Análise e Resposta a segunda pergunta
 
 A análise descritiva evidenciou que indivíduos que não consomem comida alta em calorias apresentaram peso corporal médio de 66,91 kg (DP = 17,10; n = 245), enquanto aqueles que consomem apresentaram média de 89,17 kg (DP = 26,08; n = 1866). A diferença entre as médias foi de aproximadamente 22,26 kg. Para verificar a significância estatística dessa diferença, foi realizado o teste t de Welch para amostras independentes, cujo resultado indicou valor t = -17,832, com aproximadamente 411 graus de liberdade e valor-p < 0,001. O intervalo de confiança de 95% para a diferença de médias variou de -24,72 kg a -19,81 kg, não incluindo o valor nulo, o que confirma a robustez do resultado. Assim, conclui-se que indivíduos que consomem comida alta em calorias frequentemente tendem a apresentar maior peso corporal em comparação àqueles que não consomem, sendo essa diferença estatisticamente significativa.
 ´
 Portanto, sim há uma relação muito significativo como observado pelo uso de test t pelas diferenças entre médias e desvio padrão e pelo próprio padrão observado no gráfico há uma maior peso associado a consumo de comida de alta calorias, havendo portanto uma boa relação com a obesidade em si.
 
-### 7.9. Visualização Gráfica para ajudar a responder a questão 2.
+### 7.9. Visualização Gráfica para ajudar a responder a questão 3
 
-*Inicialmente será plotado aqui novamente o gráfico que mostra apenas a distribuição e relação entre peso e altura.*
+Inicialmente será plotado aqui novamente o gráfico que mostra apenas a distribuição e relação entre peso e altura a fim de fazer um comparativo entre a análise bivariada feita anteriomente com o terceiro fator de histórico de obesidade a fim de respondermosa próxima questão.
 
 ```{r echo = FALSE}
 plot(x, y,
@@ -782,7 +797,7 @@ legend("topleft", legend = c(eq, leg), bty = "n", cex = 0.9)
 ```
 
 
-### 7.10. Separação entre grupos com histórico familiar e aqueles sem histórico de obesidade e definição do modelo de regressão linear.
+### 7.10. Separação entre grupos com histórico familiar e aqueles sem histórico de obesidade e definição do modelo de regressão linear
 
 ```{r echo = FALSE}
 
@@ -867,7 +882,7 @@ knitr::kable(metricas_nao, digits = 4, caption = "Métricas Gerais do Modelo - G
 ```
 
 
-### 7.11. Plotagem de Gráfico para visualização dos dois grupos em relação ao peso e altura.
+### 7.11. Plotagem de Gráfico para visualização dos dois grupos em relação ao peso e altura
 
 ```{r echo = FALSE}
 plot(grupo_sim$Altura, grupo_sim$Peso,
@@ -945,7 +960,7 @@ knitr::kable(metricas, digits = 4, caption = "Métricas Gerais do Modelo")
 ```
 
 
-### 7.13. Uso de IMC já que peso e altura tem a maior correlação entre si utilizando IMC que relaciona as duas conseguimos ao mesmo tempo relacionar com o historico familiar obesidade além de uso de t test para validar a possível hipótese.
+### 7.13. Uso de IMC já que peso e altura tem a maior correlação entre si utilizando IMC que relaciona as duas conseguimos ao mesmo tempo relacionar com o historico familiar obesidade além de uso de t test para validar a possível hipótese
 
 
 ```{r echo = FALSE}
@@ -1035,7 +1050,7 @@ knitr::kable(metricas_imc, digits = 4, caption = "Métricas Gerais do Modelo Lin
 ```
 
 
-### 7.14. Análise e Resposta a terceira pergunta:
+### 7.14. Análise e Resposta a terceira pergunta
 Para investigar se a relação entre altura e peso corporal apresenta diferenças significativas entre indivíduos com e sem histórico familiar de obesidade, realizamos uma análise de regressão linear separada para cada grupo, bem como uma análise de regressão com termo de interação.
 
 Modelos de regressão separados:
